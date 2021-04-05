@@ -246,16 +246,16 @@ def resultDisplay():
         if pointInfo.get("satisfiedTimes"):
             satisfiedTimes = pointInfo["satisfiedTimes"]
         pointRecords = pointInfo["pointRecords"]
-        point_infos = point_infos + "\n" + "* " + device_name.get(str(mac[-6:]), "京东云无线宝_" + str(mac[-3:])) + "==>" \
-                      + "\n   · 今日积分：" + str(todayPointIncome) \
-                      + "\n   · 可用积分：" + str(amount) \
-                      + "\n   · 总收益积分：" + str(allPointIncome)
+        point_infos = point_infos + "\n" + "- " + device_name.get(str(mac[-6:]), "京东云无线宝_" + str(mac[-3:])) + "==>" \
+                      + "\n    - 今日积分：" + str(todayPointIncome) \
+                      + "\n    - 可用积分：" + str(amount) \
+                      + "\n    - 总收益积分：" + str(allPointIncome)
         if satisfiedTimes != "":
-            point_infos = point_infos + "\n   · 累计在线：" + \
+            point_infos = point_infos + "\n    - 累计在线：" + \
                           str(satisfiedTimes) + "天"
-        point_infos = point_infos + "\n   · 最近到期积分：" + str(recentExpireAmount) \
-                      + "\n   · 最近到期时间：" + recentExpireTime \
-                      + "\n   · 最近" + str(records_num) + "条记录："
+        point_infos = point_infos + "\n    - 最近到期积分：" + str(recentExpireAmount) \
+                      + "\n    - 最近到期时间：" + recentExpireTime \
+                      + "\n    - 最近" + str(records_num) + "条记录："
         for pointRecord in pointRecords:
             recordType = pointRecord["recordType"]
             recordType_str = ""
@@ -265,7 +265,7 @@ def resultDisplay():
                 recordType_str = "积分支出："
             pointAmount = pointRecord["pointAmount"]
             createTime = pointRecord["createTime"]
-            point_infos = point_infos + "\n        " + \
+            point_infos = point_infos + "\n        - " + \
                           createTime + "  " + recordType_str + str(pointAmount)
     notifyContentJson = {"content": content, "date": todayDate, "total_today": today_total_point,
                          "avail_today": total_avail_point, "account": bindAccount, "devicesCount": totalRecord,
@@ -293,10 +293,10 @@ def resultDisplay():
 {devicesCount}
 ```
 **设备信息如下:**
-```
+- ***
 {detail}
-```""".format(**notifyContentJson)
-    server_push(title, markdownContent)
+- ***""".format(**notifyContentJson)
+    server_push(title, markdownContent.replace("- ***","```"))
     push_plus(title, markdownContent)
     print("标题->", title)
     print("内容->\n", markdownContent)
@@ -307,7 +307,6 @@ def resultDisplay():
 绑定账户:{account}
 设备总数:{devicesCount}
 **设备信息如下:**
-
 {detail}""".format(**notifyContentJson)
     print("标题->", title)
     print("内容->\n", normalContent)
@@ -328,7 +327,7 @@ def server_push(text, desp):
         "text": text,
         "desp": desp
     }
-    res = requests.post(url=server_push_url, params=params)
+    res = requests.post(url=server_push_url, data=params)
     if res.status_code == 200:
         print("Server酱推送成功!")
     else:
